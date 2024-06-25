@@ -1,0 +1,11 @@
+# Dataset
+DATASET/*
+
+# Output files
+Outputs/*
+
+# Virtual Environement
+csc_env*
+
+# Python cache files
+__pycache__/
