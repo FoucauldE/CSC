@@ -9,6 +9,7 @@ from csc_lib.tree_builder import  build_tree_recursive, build_tree, get_rare_com
 def main(max_depth, threshold_nb_docs):
 
     # Load data
+    #
     print("Loading data...")
     df_train, df_val, df_gen = load_data()
     df_idx_anns = pd.read_json('DATASET/preprocessed_e3c_cas_2.json')
