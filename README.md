@@ -27,9 +27,12 @@ To run the code you can create a new environment and install the required librar
 To ensure that no sensitive combination of associations relates to a low number of training documents, you can run the following command:
 
    ```bash
-   python get_rare_combinations.py --max_depth 3 --threshold_nb_docs 4
+   python get_rare_combinations.py -e experiment_1 --max_depth 3 --threshold_nb_docs 4
    ```
-Where `--max_depth 3` or `-d 3` specifies that we analyze combinations of **up to 3 annotations** and `--threshold_nb_docs 4` or `-t 4` specifies that we want to focus on combinations that appear in **at most 4 training documents**.
+Where :
+- `-e` specifies the name of the current experiment
+- `--max_depth 3` or `-d 3` specifies that we analyze combinations of **up to 3 annotations**
+- `--threshold_nb_docs 4` or `-t 4` specifies that we want to focus on combinations that appear in **at most 4 training documents**.
 
 
 #### Synthetic data
@@ -37,8 +40,11 @@ Where `--max_depth 3` or `-d 3` specifies that we analyze combinations of **up t
 To ensure that strong associations of annotations in the synthetic corpus do not compromise sensitive information, you can run the following command:
 
    ```bash
-   python get_common_associations.py --min_docs 3 --min_confidence 0.7
+   python get_common_associations.py -e experiment_2 --min_docs 3 --min_confidence 0.7
    ```
-Where `--min_docs 3` specifies that we analyze associations that appear in **at least 3** synthetic documents and `--min_confidence 0.7` specifies that we only consider associations with a **confidence level of 0.7 or higher**, indicating a strong correlation between the annotations.
+Where :
+- `-e` specifies the name of the current experiment
+- `--min_docs 3` specifies that we analyze associations that appear in **at least 3** synthetic documents
+- `--min_confidence 0.7` specifies that we only consider associations with a **confidence level of 0.7 or higher**, indicating a strong correlation between the annotations.
 
 ### 2. 

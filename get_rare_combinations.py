@@ -6,10 +6,12 @@ from csc_lib.data_loader import load_data
 from csc_lib.annotation_processor import get_all_annotations
 from csc_lib.tree_builder import  build_tree_recursive, build_tree, get_rare_combinations
 
-def main(max_depth, threshold_nb_docs):
+def main(experiment_name, max_depth, threshold_nb_docs):
+
+    save_path = os.path.join(OUTPUT_PATH, experiment_name)
+    os.makedirs(save_path, exist_ok=True)
 
     # Load data
-    #
     print("Loading data...")
     df_train, df_val, df_gen = load_data()
     df_idx_anns = pd.read_json('DATASET/preprocessed_e3c_cas_2.json')
@@ -48,25 +50,25 @@ def main(max_depth, threshold_nb_docs):
     df_rare_combis.sort_values(by=['# docs', '# annotations'], ascending=False, inplace=True)
 
     print("Saving results...")
-    os.makedirs(OUTPUT_PATH, exist_ok=True)
-    df_rare_combis.to_csv(os.path.join(OUTPUT_PATH, f'rare_combinations_{max_depth}_anns_{threshold_nb_docs}_docs.csv'))
+    df_rare_combis.to_csv(os.path.join(save_path, f'rare_combinations_{max_depth}_anns_{threshold_nb_docs}_docs.csv'))
 
-    print(f"Task completed successfully. Results are stored in {OUTPUT_PATH}/.")
+    print(f"Task completed successfully. Results are stored in {save_path}/.")
 
 
 
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="Find rare combinations of annotations among training documents.")
+    parser.add_argument('-e', '--experiment_name', type=str, required=True)
     parser.add_argument('-d', '--max_depth', type=int, default=3, help='Maximum depth of constructed tree (ie, max size of combination)')
     parser.add_argument('-t', '--threshold_nb_docs', type=int, default=5, help='Find the combinations present in at most the number of documents specified')
     args = parser.parse_args()
 
-    max_depth, threshold_nb_docs = args.max_depth, args.threshold_nb_docs
+    experiment_name, max_depth, threshold_nb_docs = args.experiment_name, args.max_depth, args.threshold_nb_docs
 
     print(f"Looking for rare combinations of size <= {max_depth} present in at most {threshold_nb_docs} training documents :")
 
-    main(max_depth, threshold_nb_docs)
+    main(experiment_name, max_depth, threshold_nb_docs)
 
 
     
