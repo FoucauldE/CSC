@@ -1,5 +1,3 @@
-import json
-
 class TreeNode:
     def __init__(self, annotation, dico_anns_filtered, parent=None):
         self.annotation = annotation
