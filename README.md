@@ -1,6 +1,6 @@
 # Confidentiality of Synthetic Corpora
 
-While many domains such as e-commerce, social media, and finance have leveraged vast amounts of available data to make significant advancements, sensitive domains like health and banking face substantial challenges due to the lack of shareable corpora. The CoDeinE project aims to address this issue by generating synthetic texts that replicate the linguistic properties of real documents while preserving confidentiality. Given the risks of re-identification from minimal information, we propose a method to evaluate the confidentiality of such synthetic data within a medical context.
+While many domains such as e-commerce, social media and finance have leveraged vast amounts of available data to make significant advancements, sensitive domains like health and banking face substantial challenges due to the lack of shareable corpora. The CoDeinE project aims to address this issue by generating synthetic clinical texts that replicate the linguistic properties of real documents while preserving confidentiality. Given the risks of re-identification from minimal information, we propose a method to evaluate the confidentiality of such synthetic data within a medical context.
 
 ## Requirements
 
@@ -59,7 +59,7 @@ To study if a model could generate consequents associated with prompted antecede
 2. **Evaluate consequents generation**: Run the following command:
 
 ```bash
-python consequents_generation.py -e Test_general1 -p path_association_rules.csv -n 30 -t 200 -s 1000 -b 2 -m path/to/model
+python consequents_generation.py -e Test_general1 -p path_association_rules.csv -n 30 -t 200 -s 1000 -b 2 -ft path/to/ft/model
 ```
 
 With:
@@ -69,9 +69,34 @@ With:
 - `-t`, `--max_tokens`: Number of new generated tokens.
 - `-s`, `--step`: Step size between blocks.
 - `-b`, `--block_size`: Block size.
-- `-m`, `--ft_model_path`: Path to the fine-tuned model.
+- `-ft`, `--ft_model_path`: Path to the fine-tuned model.
 
 
 The outputs are :
 - a .csv file, detailing the number of consequents found for each try and the list of generated consequents during the most successful try
 - a .png file, showcasing the distribution of the number of consequents found for each try over each studied association. The color of the violin plots indicates the percentage of consequents found during the most successful try.
+
+### 3. Membership Inference Attack
+
+To study if an attacker could determine if a piece of data was used during the training of the language model used to generate synthetic data, we propose to compare the perplexities obtained with a base model and a model fine-tuned on the synthetic data. From these perplexities, could a Machine Learning model determine the source corpus of a given piece of data ? To study this question, you can follow these steps:
+
+1. Identify associations from the training corpus by running `get_common_associations.py`.
+2. Repeat the experiment on another corpus, not used for the training of our generative model.
+3. Determine if ML models can determine the source corpus of associations from the corresponding perplexities obtained with 2 models by running the following command:
+
+```bash
+python determine_source_corpus.py -t Outputs/ppls_train.csv -u Outputs/ppls_unseen.csv -e experiment_name -ft path/to/ft_model -b path/to/base_model
+```
+   parser.add_argument('-t', '--train_rules_path', type=str, required=True, help='Path to the association rules csv file of training data')
+    parser.add_argument('-u', '--unseen_rules_path', type=str, required=True, help='Path to the association rules csv file of unseen data')
+    parser.add_argument('-b', '--base_model', type=str, default='bigscience/bloom-1b1', help='Base model path')
+    parser.add_argument('-ft', '--ft_model_path', type=str, default=FT_MODEL_PATH, help='Path to the fine-tuned model')
+    parser.add_argument('-e', '--experiment_name', type=str, required=True)
+With:
+- `-t`, `--train_rules_path`: Path to the association rules CSV file from the training corpus.
+- `-u`, `--unseen_rules_path`: Path to the association rules CSV file from a corpus not used for training.
+- `-e`, `--experiment_name`: Name of the current experiment.
+- `-ft`, `--ft_model_path`: Path to the fine-tuned model.
+- `-b`, `--base_model`: Path to the base model path
+
+The output is a .txt file detailing the classification metrics obtained when training the models specified in `config.py`.
