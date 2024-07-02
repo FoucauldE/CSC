@@ -87,11 +87,7 @@ To study if an attacker could determine if a piece of data was used during the t
 ```bash
 python determine_source_corpus.py -t Outputs/ppls_train.csv -u Outputs/ppls_unseen.csv -e experiment_name -ft path/to/ft_model -b path/to/base_model
 ```
-   parser.add_argument('-t', '--train_rules_path', type=str, required=True, help='Path to the association rules csv file of training data')
-    parser.add_argument('-u', '--unseen_rules_path', type=str, required=True, help='Path to the association rules csv file of unseen data')
-    parser.add_argument('-b', '--base_model', type=str, default='bigscience/bloom-1b1', help='Base model path')
-    parser.add_argument('-ft', '--ft_model_path', type=str, default=FT_MODEL_PATH, help='Path to the fine-tuned model')
-    parser.add_argument('-e', '--experiment_name', type=str, required=True)
+
 With:
 - `-t`, `--train_rules_path`: Path to the association rules CSV file from the training corpus.
 - `-u`, `--unseen_rules_path`: Path to the association rules CSV file from a corpus not used for training.
