@@ -70,11 +70,11 @@ def reverse_annotations_dict(dico_anns:dict):
     return reversed_dico_anns
 
 
+
+"""
 def build_df_with_indications(df:pd.DataFrame):
-    """
-    Returns a dataframe containing filename, age, sex, annotation and indication
-    Indication is a description of the main reason of the patient's arrival
-    """
+    # Returns a dataframe containing filename, age, sex, annotation and indication
+    # Indication is a description of the main reason of the patient's arrival
 
     def get_indications(filename):
         indication = None
@@ -95,7 +95,7 @@ def build_df_with_indications(df:pd.DataFrame):
                 new_rows.append(list(row[columns_to_keep]) + [indication])
 
     return pd.DataFrame(new_rows, columns = columns_to_keep + ['indication'])
-
+"""
 
 
 """
