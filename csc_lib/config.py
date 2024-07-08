@@ -3,7 +3,7 @@ from xgboost import XGBClassifier
 
 DATA_PATH = "DATASET/corpus_propre"
 OUTPUT_PATH = "Outputs"
-FT_MODEL_PATH = "../../model/bloom-1b1_lora"
+FT_MODEL_PATH = "path/to/model"
 
 TYPES_TO_KEEP = {'PROC', 'DISO', 'CHEM'}
 
@@ -62,7 +62,7 @@ models_and_params = {
         }
     },
 
-    'xgb': {
+    'XGB': {
         'model': XGBClassifier(eval_metric='logloss', random_state=42),
         'param_grid': {
             'model__n_estimators': [100, 200, 300],
