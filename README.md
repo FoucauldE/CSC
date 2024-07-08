@@ -95,4 +95,6 @@ With:
 - `-ft`, `--ft_model_path`: Path to the fine-tuned model.
 - `-b`, `--base_model`: Path to the base model path
 
-The output is a .txt file detailing the classification metrics obtained when training the models specified in `config.py`.
+The outputs are :
+- a .txt file detailing the classification metrics obtained when training the models specified in `config.py`
+- .png files with the ROC Curves obtained with each model used.
