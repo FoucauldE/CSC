@@ -12,7 +12,7 @@ def main(association_rules_path, experiment_name, nb_tries, max_new_tokens, step
 
     # Check if association rules path exists
     if not os.path.isfile(association_rules_path):
-        raise FileNotFoundError(f"The specified path for association rules does not exists: {association_rules_path}")
+        raise FileNotFoundError(f"The specified path for CSV file containing association rules is not correct: {association_rules_path}")
     
     # Load association rules
     df_rules = pd.read_csv(association_rules_path, index_col=0)
@@ -54,7 +54,7 @@ def main(association_rules_path, experiment_name, nb_tries, max_new_tokens, step
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Measure to which extent a model can generate consequents when prompting antecedents')
-    parser.add_argument('-p', '--path_rules', type=str, required=True, help='Path to the association rules csv file to study')
+    parser.add_argument('-p', '--path_rules', type=str, required=True, help='Path to the association rules CSV file to study')
     parser.add_argument('-ft', '--ft_model_path', type=str, default=FT_MODEL_PATH, help='Path to the fine-tuned model')
     parser.add_argument('-n', '--number_tries', type=int, default=30, help='Number of generations for each studied case.')
     parser.add_argument('-t', '--max_tokens', type=int, default=300, help='Number of new tokens.')
