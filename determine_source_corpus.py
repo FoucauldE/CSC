@@ -37,7 +37,8 @@ def main(train_rules_path, unseen_rules_path, experiment_name, base_model_path, 
         print(f"Training {model_name}...", end=' ')
         result = train_and_evaluate_model(
             X_train, X_test, y_train, y_test,
-            model_info['model'], model_info['param_grid']
+            model_info['model'], model_info['param_grid'],
+            os.path.join(OUTPUT_PATH, experiment_name, f'ROC_curve_{model_name}.png')
         )
         print("✔")
         classification_results[model_name] = result
@@ -48,12 +49,13 @@ def main(train_rules_path, unseen_rules_path, experiment_name, base_model_path, 
     os.makedirs(save_path, exist_ok=True)
     with open(f"{save_path}/classification_scores.txt", "a") as f:
         for model, metrics in classification_results.items():
-            conf_matrix, acc, roc_auc, precision = metrics.values()
+            conf_matrix, acc, roc_auc, precision, tpr_at_fpr = metrics.values()
             f.write(f"Model: {model}\n")
             f.write(f"Confusion matrix:\n{conf_matrix}\n")
             f.write(f"Accuracy: {acc:.3f}\n")
             f.write(f"roc auc: {roc_auc:.3f}\n")
             f.write(f"Precision: {precision:.3f}\n")
+            f.write(f"TPR at FPR: {', '.join(f'{k}: {v:.3f}' for k, v in tpr_at_fpr.items())}\n")
             f.write("\n\n")
 
     print(f"Task completed successfully. Results are stored in {save_path}/classification_scores.txt .")

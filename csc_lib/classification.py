@@ -8,7 +8,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
-from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, roc_auc_score, make_scorer
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, roc_auc_score, make_scorer, roc_curve
+import matplotlib.pyplot as plt
 
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -33,9 +34,7 @@ def get_associations(df:pd.DataFrame, len_associations=3):
     By default, we consider associations of 3 annotations
     """
 
-    for i, (_, row) in enumerate(df.iterrows()):
-        if i>50:
-            break
+    for _, row in df.iterrows():
         antecedents, consequents = list(row['antecedents']), list(row['consequents'])
         if len(antecedents) + len(consequents) == len_associations:
             yield antecedents + consequents
@@ -88,7 +87,7 @@ def prepare_data_downsample(df0, df1):
     return X_train, X_test, y_train, y_test
 
 
-def train_and_evaluate_model(X_train, X_test, y_train, y_test, model, param_grid, use_smote=False):
+def train_and_evaluate_model(X_train, X_test, y_train, y_test, model, param_grid, save_fig_path, use_smote=False):
     """
     Train specified model and return results
     Apply grid search on precision
@@ -121,9 +120,36 @@ def train_and_evaluate_model(X_train, X_test, y_train, y_test, model, param_grid
     roc_auc = roc_auc_score(y_test, y_proba)
     precision = precision_score(y_test, y_pred, zero_division=0)
 
+    fpr, tpr, thresholds = roc_curve(y_test, y_proba)
+
+    # Define FPR threshold to consider
+    fpr_thresholds = [0.01, 0.05, 0.1]
+    tpr_at_fpr = {}
+
+    for threshold in fpr_thresholds:
+        # Find the TPR corresponding FPR threshold studied
+        # Note that we do not use zip to directly build the dictionary since the same FPR could appear more than once
+        idx = next(i for i, f in enumerate(fpr) if f > threshold) - 1
+        tpr_at_fpr[threshold] = tpr[idx] if idx > 0 else 0
+        
+    # Plot and save the ROC Curve
+    plt.figure()
+    plt.plot(fpr, tpr, label='ROC curve')
+    plt.plot([0, 1], [0, 1], 'k--')
+    plt.semilogx()
+    plt.semilogy()
+    plt.xlim(1e-5,1)
+    plt.ylim(1e-5,1)
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title(f'ROC Curve using {model.__class__.__name__}')
+    plt.grid(True)
+    plt.savefig(save_fig_path)
+
     return {
         'conf_matrix': conf_matrix,
         'accuracy': accuracy,
         'roc_auc': roc_auc,
-        'precision': precision
+        'precision': precision,
+        'tpr_at_fpr': tpr_at_fpr
     }
