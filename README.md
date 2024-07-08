@@ -26,7 +26,7 @@ To run the code you can create a new environment and install the required librar
 To ensure that no sensitive combination of associations relates to a low number of training documents, you can run the following command:
 
    ```bash
-   python get_rare_combinations.py -p path/to/anns/folder -e experiment_1 --max_depth 3 --threshold_nb_docs 4
+   python get_rare_combinations.py -e experiment_1 -p path/to/anns/folder  --max_depth 3 --threshold_nb_docs 4
    ```
 Where :
 - `-p` specifies the path of the folder containing the .ann files to study
@@ -41,7 +41,7 @@ Results are stored in a .csv file containing the rare combinations, along with t
 To ensure that strong associations of annotations in the synthetic corpus do not compromise sensitive information, you can run the following command:
 
    ```bash
-   python get_common_associations.py -p path/to/anns/folder -e experiment_2 --min_docs 3 --min_confidence 0.7
+   python get_common_associations.py -e experiment_2 -p path/to/anns/folder  --min_docs 3 --min_confidence 0.7
    ```
 Where :
 - `-p` specifies the path of the folder containing the .ann files to study
@@ -59,7 +59,7 @@ To study if a model could generate consequents associated with prompted antecede
 2. **Evaluate consequents generation**: Run the following command:
 
 ```bash
-python consequents_generation.py -e Test_general1 -p path_association_rules.csv -n 30 -t 200 -s 1000 -b 2 -ft path/to/ft/model
+python consequents_generation.py -e experiment_3 -p path_association_rules.csv -n 30 -t 200 -s 1000 -b 2 -ft path/to/ft/model
 ```
 
 With:
@@ -85,7 +85,7 @@ To study if an attacker could determine if a piece of data was used during the t
 3. Determine if ML models can determine the source corpus of associations from the corresponding perplexities obtained with 2 models by running the following command:
 
 ```bash
-python determine_source_corpus.py -t Outputs/ppls_train.csv -u Outputs/ppls_unseen.csv -e experiment_name -ft path/to/ft_model -b path/to/base_model
+python determine_source_corpus.py -e experiment_name -t Outputs/ppls_train.csv -u Outputs/ppls_unseen.csv  -ft path/to/ft_model -b path/to/base_model
 ```
 
 With:
