@@ -1,3 +1,5 @@
+from itertools import combinations
+
 class TreeNode:
     def __init__(self, annotation, dico_anns_filtered, parent=None):
         self.annotation = annotation
@@ -24,6 +26,7 @@ class TreeNode:
 
 
 def build_tree_recursive(annotations, parent, current_depth, max_depth, threshold_number_docs, dico_anns_filtered):
+    """Recursively builds a tree representing combinations of annotations where each node represents an annotation"""
     
     if current_depth >= max_depth:
         return
@@ -38,34 +41,51 @@ def build_tree_recursive(annotations, parent, current_depth, max_depth, threshol
                  
 
 def build_tree(annotations, max_depth, threshold_number_docs, dico_anns_filtered):
+    """Builds the root of the tree and starts calls the function to recursively complete it"""
+
     annotations = list(annotations)
     root = TreeNode(annotations[0], dico_anns_filtered)
     build_tree_recursive(annotations[1:], root, 0, max_depth, threshold_number_docs, dico_anns_filtered)
     return root
 
 
-def get_rare_combinations(tree_dict, threshold_nb_docs, max_combination_size, current_combination=None, current_docs=None, results=None, seen_combinations=None):
-    
+def is_subset_flagged(current_combination, flagged_combinations):
+    """Checks if any subset of the current combination is already flagged"""
+
+    for i in range(1, len(current_combination)):
+        for subset in combinations(current_combination, i):
+            if tuple(sorted(subset)) in flagged_combinations:
+                return True
+    return False
+
+
+def get_rare_combinations(tree_dict, threshold_nb_docs, max_combination_size, current_combination=None, current_docs=None, results=None, flagged_combinations=None):
+    """Recursively retrieves rare combinations of annotations from the tree"""
+
     if current_combination is None:
         current_combination = set()
     if current_docs is None:
         current_docs = []
     if results is None:
         results = []
-    if seen_combinations is None:
-        seen_combinations = set()
+    if flagged_combinations is None:
+        flagged_combinations = set()
 
     current_combination.add(tree_dict['annotation'])
     current_docs = tree_dict['docs']
-    
+
     if len(current_combination) > max_combination_size + 1:
-        return
-    if len(current_docs) <= threshold_nb_docs:
+        return # Stop if the combination size is greater than the limit
+    
+    # Ensure that the combination is present in less documents than the requested threshold and that no subset of the combination has already been flagged
+    if len(current_docs) <= threshold_nb_docs and not is_subset_flagged(current_combination, flagged_combinations):
         combination_tuple = tuple(sorted(current_combination))
-        if combination_tuple not in seen_combinations:
-            seen_combinations.add(combination_tuple)
+        if combination_tuple not in flagged_combinations:
+            flagged_combinations.add(combination_tuple)
             results.append({'combination': list(current_combination)[1:], 'docs': current_docs})
+
+    # Recursively process each child node in the tree        
     for child in tree_dict.get('children', []):
-        get_rare_combinations(child, threshold_nb_docs, max_combination_size, current_combination.copy(), current_docs, results, seen_combinations)
+        get_rare_combinations(child, threshold_nb_docs, max_combination_size, current_combination.copy(), current_docs, results, flagged_combinations)
 
     return results
