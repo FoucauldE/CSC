@@ -44,23 +44,28 @@ def build_tree(annotations, max_depth, threshold_number_docs, dico_anns_filtered
     return root
 
 
-def get_rare_combinations(tree_dict, threshold_nb_docs, max_combination_size, current_combination=None, current_docs=None, results=None):
-
+def get_rare_combinations(tree_dict, threshold_nb_docs, max_combination_size, current_combination=None, current_docs=None, results=None, seen_combinations=None):
+    
     if current_combination is None:
-        current_combination = []
+        current_combination = set()
     if current_docs is None:
         current_docs = []
     if results is None:
         results = []
+    if seen_combinations is None:
+        seen_combinations = set()
 
-    current_combination.append(tree_dict['annotation'])
+    current_combination.add(tree_dict['annotation'])
     current_docs = tree_dict['docs']
     
     if len(current_combination) > max_combination_size + 1:
         return
     if len(current_docs) <= threshold_nb_docs:
-        results.append({'combination': current_combination[1:], 'docs': current_docs})
+        combination_tuple = tuple(sorted(current_combination))
+        if combination_tuple not in seen_combinations:
+            seen_combinations.add(combination_tuple)
+            results.append({'combination': list(current_combination)[1:], 'docs': current_docs})
     for child in tree_dict.get('children', []):
-        get_rare_combinations(child, threshold_nb_docs, max_combination_size, current_combination[:], current_docs, results)
+        get_rare_combinations(child, threshold_nb_docs, max_combination_size, current_combination.copy(), current_docs, results, seen_combinations)
 
     return results
