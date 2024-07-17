@@ -14,6 +14,10 @@ def main(train_rules_path, unseen_rules_path, experiment_name, base_model_path, 
     if not os.path.isfile(unseen_rules_path):
         raise FileNotFoundError(f"The specified path for CSV file containing association rules is not correct: {unseen_rules_path}")
     
+    # Creates save path
+    save_path = os.path.join(OUTPUT_PATH, experiment_name)
+    os.makedirs(save_path, exist_ok=True)
+    
     # Load association rules
     train_rules = pd.read_csv(train_rules_path, index_col=0)
     train_rules = correct_literal_eval(train_rules, ['antecedents', 'consequents'])
@@ -45,8 +49,6 @@ def main(train_rules_path, unseen_rules_path, experiment_name, base_model_path, 
 
 
     # Save the results
-    save_path = os.path.join(OUTPUT_PATH, experiment_name)
-    os.makedirs(save_path, exist_ok=True)
     with open(f"{save_path}/classification_scores.txt", "a") as f:
         for model, metrics in classification_results.items():
             conf_matrix, acc, roc_auc, precision, tpr_at_fpr = metrics.values()
