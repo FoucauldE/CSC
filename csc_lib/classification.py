@@ -40,13 +40,29 @@ def get_associations(df:pd.DataFrame, len_associations=3):
             yield antecedents + consequents
 
 
+def count_considered_associations(df: pd.DataFrame, len_associations=3):
+    """
+    Counts the number of associations that meet the length requirement.
+    Used for display purposes when using tqdm bar.
+    """
+    count = 0
+    for _, row in df.iterrows():
+        antecedents, consequents = list(row['antecedents']), list(row['consequents'])
+        if len(antecedents) + len(consequents) == len_associations:
+            count += 1
+    return count
+
+
 def calculate_all_ppls(df:pd.DataFrame, base_model, ft_model, tokenizer, len_associations=3):
     """
     Returns a dataframe containing, for each association, the perplexity obtained with 2 distinct models and the ratio of their log-perplexity
     """
 
+    # Counts the associations that meet the length requirement (default: 3)
+    considered_associations_count = count_considered_associations(df, len_associations)
+
     result_df = pd.DataFrame(columns=['association', 'base_ppl', 'finetuned_ppl', 'ratio_ppls'])
-    for input in tqdm(get_associations(df, len_associations), desc=f'Calculating perplexities...', total=len(df)):
+    for input in tqdm(get_associations(df, len_associations), desc=f'Calculating perplexities...', total=considered_associations_count):
         input = ', '.join(input)
         ppls = [get_ppl(input, selected_model, tokenizer) for selected_model in [base_model, ft_model]]
         result_df.loc[len(result_df)] = [input, ppls[0], ppls[1], math.log(ppls[0])/math.log(ppls[1])]
@@ -104,12 +120,14 @@ def train_and_evaluate_model(X_train, X_test, y_train, y_test, model, param_grid
             ('model', model)
         ])
 
+    """
     # Precision is set to 0 when no positive prediction is made
     def custom_precision_score(y_true, y_pred):
         return precision_score(y_true, y_pred, zero_division=0)
     custom_precision = make_scorer(custom_precision_score)
+    """
 
-    grid_search = GridSearchCV(pipeline, param_grid, cv=5, n_jobs=-1, scoring=custom_precision)
+    grid_search = GridSearchCV(pipeline, param_grid, cv=5, n_jobs=-1, scoring='roc_auc')
     grid_search.fit(X_train, y_train)
     best_model = grid_search.best_estimator_
     y_pred = best_model.predict(X_test)
