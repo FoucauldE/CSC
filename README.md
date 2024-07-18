@@ -16,8 +16,8 @@ To run the code you can create a new environment and install the required librar
 
 ### 0. Load the data
 
-1. Insert your data in the `DATASET/` folder.
-2. Configure the `csc_lib/config.py` as needed to match your requirements.
+1. Insert your data in the `DATASET/` folder by creating subfolders corresponding to the training, validation and synthetic corpus, respectively. Annotations are expected to be stored in .ann files using the BRAT format.
+2. Configure the `csc_lib/config.py` as needed to match your requirements (default paths, annotations to filter, generation parameters...)
 
 ### 1. Evaluate the confidentality of the corpora
 
@@ -63,12 +63,12 @@ python consequents_generation.py -e experiment_3 -p path_association_rules.csv -
 ```
 
 With:
-- `-p`, `--path_rules`: Path to the association rules CSV file to study.
+- `-p`, `--path_rules`: Path to the CSV file containing association rules to study.
 - `-e`, `--experiment_name`: Name of the current experiment.
-- `-n`, `--number_tries`: Number of generations for each studied case.
+- `-n`, `--number_tries`: Number of attempts to generate consequents for each association.
 - `-t`, `--max_tokens`: Number of new generated tokens.
-- `-s`, `--step`: Step size between blocks.
-- `-b`, `--block_size`: Block size.
+- `-s`, `--step`: Spacing between the starting points of consecutive sub-blocks of association rules. For example, with `-s 1000`, the process would start at rule 0, skip 999 rules, and start the next sub-block at rule 1000.
+- `-b`, `--block_size`: Number of association rules that compose a single block.
 - `-ft`, `--ft_model_path`: Path to the fine-tuned model.
 
 
@@ -93,7 +93,7 @@ With:
 - `-u`, `--unseen_rules_path`: Path to the association rules CSV file from a corpus not used for training.
 - `-e`, `--experiment_name`: Name of the current experiment.
 - `-ft`, `--ft_model_path`: Path to the fine-tuned model.
-- `-b`, `--base_model`: Path to the base model path
+- `-b`, `--base_model`: Path to the base model.
 
 The outputs are :
 - a .txt file detailing the classification metrics obtained when training the models specified in `config.py`
