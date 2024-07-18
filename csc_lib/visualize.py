@@ -26,7 +26,7 @@ def violin_plot(df, target_column, title, filter_func=None):
             data.append({'Row': i, 'Value': val})
     data_df = pd.DataFrame(data)
 
-    sns.violinplot(data=data_df, x='Row', y='Value', ax=ax, inner=None, cut=0, palette=colors)
+    sns.violinplot(data=data_df, x='Row', y='Value', hue='Row', ax=ax, inner=None, cut=0, palette=colors, legend=False)
 
     # Add legend
     cbar = plt.colorbar(plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(0, 100)), ax=ax)
