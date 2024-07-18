@@ -37,8 +37,9 @@ def measure_chances_generating_target(generator, df, target_column, prompt_templ
 
             for _ in range(nb_tries):
 
-                generated = generator.complete_prompt(prompt, GEN_ARGS, max_new_tokens)
-                found_targets = {target for target in targets if generated.find(target)!=-1}
+                completed_prompt = generator.complete_prompt(prompt, GEN_ARGS, max_new_tokens)
+                generated_part = completed_prompt[len(completed_prompt):] # we exclude the prompt
+                found_targets = {target for target in targets if generated_part.find(target)!=-1}
                 nb_targets_found = len(found_targets)
                 nb_targets_found_over_each_try.append(nb_targets_found)
 
